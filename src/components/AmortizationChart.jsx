@@ -116,17 +116,17 @@ export default function AmortizationChart({ inputs }) {
         </div>
       </div>
 
-      {/* Stacked area: yearly principal vs interest */}
+      {/* Overlapping areas: each plotted from zero so both curves move */}
       <ResponsiveContainer width="100%" height={320}>
         <ComposedChart data={data} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
           <defs>
             <linearGradient id="gradInterest" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#fb7185" stopOpacity={0.85} />
-              <stop offset="95%" stopColor="#fb7185" stopOpacity={0.2} />
+              <stop offset="5%" stopColor="#fb7185" stopOpacity={0.5} />
+              <stop offset="95%" stopColor="#fb7185" stopOpacity={0.05} />
             </linearGradient>
             <linearGradient id="gradPrincipal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.85} />
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.2} />
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.5} />
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
             </linearGradient>
           </defs>
 
@@ -161,22 +161,21 @@ export default function AmortizationChart({ inputs }) {
           <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '4 2' }} />
           <Legend content={<CustomLegend />} />
 
+          {/* Interest first so Principal renders on top at the crossover */}
           <Area
             yAxisId="payment"
             type="monotone"
             dataKey="Interest"
-            stackId="payment"
             stroke="#f43f5e"
-            strokeWidth={1.5}
+            strokeWidth={2}
             fill="url(#gradInterest)"
           />
           <Area
             yAxisId="payment"
             type="monotone"
             dataKey="Principal"
-            stackId="payment"
             stroke="#2563eb"
-            strokeWidth={1.5}
+            strokeWidth={2}
             fill="url(#gradPrincipal)"
           />
           <Line
