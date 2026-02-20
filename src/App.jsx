@@ -4,8 +4,13 @@ import MortgageForm from './components/MortgageForm'
 import MortgageResults from './components/MortgageResults'
 import { calculateMortgage } from './lib/mortgage'
 import LoanTaxTable from './components/LoanTaxTable'
-import Button from '@mui/material/Button'
-import EditIcon from '@mui/icons-material/Edit'
+import { PencilIcon } from 'lucide-react'
+
+const CURRENCY_FIELDS = new Set([
+  'listPrice', 'offerPrice', 'taxes', 'insurance',
+  'grossMonthlyIncome', 'netMonthlyIncome', 'monthlyExpenses',
+])
+const PERCENT_FIELDS = new Set(['downPaymentPct', 'interestRatePct'])
 
 function App() {
   const [inputs, setInputs] = useState({
@@ -25,7 +30,10 @@ function App() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setInputs((prev) => ({ ...prev, [name]: value }))
+    let clean = value
+    if (CURRENCY_FIELDS.has(name)) clean = value.replace(/[^0-9.]/g, '')
+    else if (PERCENT_FIELDS.has(name)) clean = value.replace(/[^0-9.]/g, '')
+    setInputs((prev) => ({ ...prev, [name]: clean }))
   }
 
   const handleCalculate = () => {
@@ -33,9 +41,9 @@ function App() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col items-center p-2 sm:p-6">
-      <div className="w-full max-w-5xl bg-white rounded shadow mt-4 p-2 sm:p-6">
-        <h1 className="text-2xl font-bold mb-4 text-center">Mortgage Calculator</h1>
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex flex-col items-center p-4 sm:p-8">
+      <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg border border-slate-200 mt-6 p-4 sm:p-8">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-800 mb-6 text-center">Mortgage Calculator</h1>
         <MortgageForm
           inputs={inputs}
           onChange={handleChange}
@@ -44,18 +52,16 @@ function App() {
           setExpanded={setExpanded}
         />
         {!expanded && (
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<EditIcon />}
-            className="mt-2 mb-4"
+          <button
+            className="mt-2 mb-4 border border-slate-300 rounded-lg px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
             onClick={() => {
               setExpanded(true)
               setResults(null)
             }}
           >
+            <PencilIcon size={14} />
             Edit Inputs
-          </Button>
+          </button>
         )}
         {!expanded && results && (
           <>
