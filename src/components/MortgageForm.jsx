@@ -87,16 +87,6 @@ export default function MortgageForm({ inputs, onChange, onCalculate, expanded, 
           onChange={onChange}
         />
 
-        <label htmlFor="listPrice" className={labelClass}>List Price</label>
-        <StepInput
-          id="listPrice" name="listPrice" step={1000}
-          rawValue={inputs.listPrice}
-          displayValue={displayCurrency(inputs.listPrice, 'listPrice')}
-          onChange={onChange}
-          onFocus={focus('listPrice')} onBlur={blur()}
-          inputMode="numeric" placeholder="$0"
-        />
-
         <label htmlFor="offerPrice" className={labelClass}>Offer Price</label>
         <StepInput
           id="offerPrice" name="offerPrice" step={1000}

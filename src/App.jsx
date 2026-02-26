@@ -7,7 +7,7 @@ import LoanTaxTable from './components/LoanTaxTable'
 import { PencilIcon } from 'lucide-react'
 
 const CURRENCY_FIELDS = new Set([
-  'listPrice', 'offerPrice', 'taxes', 'insurance',
+  'offerPrice', 'taxes', 'insurance',
   'grossMonthlyIncome', 'netMonthlyIncome', 'monthlyExpenses',
 ])
 const PERCENT_FIELDS = new Set(['downPaymentPct', 'interestRatePct'])
@@ -15,7 +15,6 @@ const PERCENT_FIELDS = new Set(['downPaymentPct', 'interestRatePct'])
 function App() {
   const [inputs, setInputs] = useState({
     address: '123 Main St',
-    listPrice: '339000',
     offerPrice: '339000',
     downPaymentPct: '20',
     interestRatePct: '3.5',
