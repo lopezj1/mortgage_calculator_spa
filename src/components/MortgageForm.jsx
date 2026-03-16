@@ -107,15 +107,24 @@ export default function MortgageForm({ inputs, onChange, onCalculate, expanded, 
           inputMode="decimal" placeholder="0%"
         />
 
-        <label htmlFor="interestRatePct" className={labelClass}>Interest Rate</label>
-        <StepInput
-          id="interestRatePct" name="interestRatePct" step={0.125}
-          rawValue={inputs.interestRatePct}
-          displayValue={displayPercent(inputs.interestRatePct, 'interestRatePct')}
-          onChange={onChange}
-          onFocus={focus('interestRatePct')} onBlur={blur()}
-          inputMode="decimal" placeholder="0%"
-        />
+        <label className={labelClass}>Interest Rates</label>
+        {[
+          { label: '15 yr', name: 'interestRatePct15' },
+          { label: '20 yr', name: 'interestRatePct20' },
+          { label: '30 yr', name: 'interestRatePct' },
+        ].map(({ label, name }) => (
+          <div key={name} className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500 w-10 shrink-0">{label}</span>
+            <StepInput
+              id={name} name={name} step={0.125}
+              rawValue={inputs[name]}
+              displayValue={displayPercent(inputs[name], name)}
+              onChange={onChange}
+              onFocus={focus(name)} onBlur={blur()}
+              inputMode="decimal" placeholder="0%"
+            />
+          </div>
+        ))}
 
         <label className={labelClass}>Loan Term</label>
         <div className="flex gap-2">

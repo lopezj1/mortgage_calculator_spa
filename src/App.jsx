@@ -10,7 +10,7 @@ const CURRENCY_FIELDS = new Set([
   'offerPrice', 'taxes', 'insurance',
   'grossMonthlyIncome', 'netMonthlyIncome', 'monthlyExpenses',
 ])
-const PERCENT_FIELDS = new Set(['downPaymentPct', 'interestRatePct'])
+const PERCENT_FIELDS = new Set(['downPaymentPct', 'interestRatePct', 'interestRatePct20', 'interestRatePct15'])
 
 function App() {
   const [inputs, setInputs] = useState({
@@ -18,6 +18,8 @@ function App() {
     offerPrice: '339000',
     downPaymentPct: '20',
     interestRatePct: '3.5',
+    interestRatePct20: '2.75',
+    interestRatePct15: '2.0',
     grossMonthlyIncome: '8000',
     netMonthlyIncome: '5000',
     monthlyExpenses: '3196',
@@ -37,9 +39,17 @@ function App() {
     setInputs((prev) => ({ ...prev, [name]: clean }))
   }
 
+  const rateForTerm = (t) => ({
+    15: inputs.interestRatePct15,
+    20: inputs.interestRatePct20,
+    30: inputs.interestRatePct,
+  }[t] ?? inputs.interestRatePct)
+
   const handleCalculate = () => {
-    setResults(calculateMortgage(inputs))
-    setComparisonResults([15, 20, 30].map(t => calculateMortgage({ ...inputs, termYears: String(t) })))
+    const selectedTerm = parseInt(inputs.termYears) || 30
+    const withRate = (t) => ({ ...inputs, termYears: String(t), interestRatePct: rateForTerm(t) })
+    setResults(calculateMortgage(withRate(selectedTerm)))
+    setComparisonResults([15, 20, 30].map(t => calculateMortgage(withRate(t))))
   }
 
   return (
@@ -67,7 +77,11 @@ function App() {
         )}
         {!expanded && results && (
           <>
-            <MortgageResults results={results} inputs={inputs} comparisonResults={comparisonResults} />
+            <MortgageResults
+              results={results}
+              inputs={{ ...inputs, interestRatePct: rateForTerm(parseInt(inputs.termYears) || 30) }}
+              comparisonResults={comparisonResults}
+            />
             <LoanTaxTable grossMonthlyIncome={inputs.grossMonthlyIncome} />
           </>
         )}
