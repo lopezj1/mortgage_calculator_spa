@@ -1,6 +1,6 @@
 // src/lib/mortgage.js
 // Utility function for mortgage calculations
-export function calculateMortgage(inputs) {
+export function calculateMortgage(inputs, termYears = 30) {
   const listPrice = parseFloat(inputs.listPrice) || 0;
   const offerPrice = parseFloat(inputs.offerPrice) || 0;
   const downPaymentPct = parseFloat(inputs.downPaymentPct) || 0;
@@ -10,11 +10,12 @@ export function calculateMortgage(inputs) {
   const monthlyExpenses = parseFloat(inputs.monthlyExpenses) || 0;
   const taxes = parseFloat(inputs.taxes) || 0;
   const insurance = parseFloat(inputs.insurance) || 0;
+  const term = parseInt(inputs.termYears) || termYears;
 
   const downPayment = offerPrice * (downPaymentPct / 100);
   const loanAmount = offerPrice - downPayment;
   const monthlyInterestRate = interestRatePct / 100 / 12;
-  const n = 30 * 12; // 30 years
+  const n = term * 12;
   const monthlyPayment = loanAmount > 0 && monthlyInterestRate > 0
     ? (loanAmount * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -n))
     : 0;
@@ -36,5 +37,7 @@ export function calculateMortgage(inputs) {
     mortgagePctGross,
     monthlyTaxes,
     monthlyInsurance,
+    termYears: term,
+    interestRatePct,
   };
 }

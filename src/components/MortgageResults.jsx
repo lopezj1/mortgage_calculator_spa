@@ -1,21 +1,23 @@
 // src/components/MortgageResults.jsx
 import React from 'react'
 import AmortizationChart from './AmortizationChart'
+import TermComparisonTable from './TermComparisonTable'
 
 function fmt(n) {
   return n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
 }
 
-export default function MortgageResults({ results, inputs }) {
+export default function MortgageResults({ results, inputs, comparisonResults }) {
   if (!results) return null
 
+  const termYears = results.termYears || 30
   const stats = [
     { label: 'Loan Amount', value: fmt(results.loanAmount) },
     { label: 'Monthly Payment', value: fmt(results.monthlyPayment) },
     { label: 'Monthly Taxes', value: fmt(results.monthlyTaxes) },
     { label: 'Monthly Insurance', value: fmt(results.monthlyInsurance) },
     { label: 'Total Monthly Expense', value: fmt(results.totalMonthlyHouseExpense) },
-    { label: '30-Year Total', value: fmt(results.totalPayment) },
+    { label: `${termYears}-Year Total`, value: fmt(results.totalPayment) },
     { label: '3-Month Emergency Fund', value: fmt(results.emergencyFund3) },
     { label: '6-Month Emergency Fund', value: fmt(results.emergencyFund6) },
     { label: '% of Gross Income', value: `${results.mortgagePctGross.toLocaleString(undefined, { maximumFractionDigits: 2 })}%` },
@@ -32,6 +34,7 @@ export default function MortgageResults({ results, inputs }) {
           </div>
         ))}
       </div>
+      <TermComparisonTable comparisonResults={comparisonResults} selectedTerm={termYears} />
       <div className="mt-8">
         <AmortizationChart inputs={inputs} />
       </div>

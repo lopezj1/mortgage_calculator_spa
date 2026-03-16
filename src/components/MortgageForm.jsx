@@ -116,6 +116,24 @@ export default function MortgageForm({ inputs, onChange, onCalculate, expanded, 
           onFocus={focus('interestRatePct')} onBlur={blur()}
           inputMode="decimal" placeholder="0%"
         />
+
+        <label className={labelClass}>Loan Term</label>
+        <div className="flex gap-2">
+          {[15, 20, 30].map((yr) => (
+            <button
+              key={yr}
+              type="button"
+              onClick={() => onChange({ target: { name: 'termYears', value: String(yr) } })}
+              className={`flex-1 py-2 rounded-lg border text-sm font-semibold transition-colors ${
+                String(inputs.termYears) === String(yr)
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100'
+              }`}
+            >
+              {yr} yr
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Right column ── */}

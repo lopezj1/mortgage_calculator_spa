@@ -23,8 +23,10 @@ function App() {
     monthlyExpenses: '3196',
     taxes: '6500',
     insurance: '800',
+    termYears: '30',
   })
   const [results, setResults] = useState(null)
+  const [comparisonResults, setComparisonResults] = useState(null)
   const [expanded, setExpanded] = useState(true)
 
   const handleChange = (e) => {
@@ -37,6 +39,7 @@ function App() {
 
   const handleCalculate = () => {
     setResults(calculateMortgage(inputs))
+    setComparisonResults([15, 20, 30].map(t => calculateMortgage({ ...inputs, termYears: String(t) })))
   }
 
   return (
@@ -64,7 +67,7 @@ function App() {
         )}
         {!expanded && results && (
           <>
-            <MortgageResults results={results} inputs={inputs} />
+            <MortgageResults results={results} inputs={inputs} comparisonResults={comparisonResults} />
             <LoanTaxTable grossMonthlyIncome={inputs.grossMonthlyIncome} />
           </>
         )}

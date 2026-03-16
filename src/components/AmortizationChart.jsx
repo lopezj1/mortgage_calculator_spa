@@ -6,12 +6,13 @@ import {
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
 
-function buildYearlyData({ offerPrice, downPaymentPct, interestRatePct }) {
+function buildYearlyData({ offerPrice, downPaymentPct, interestRatePct, termYears }) {
   const principal = parseFloat(offerPrice) || 0
   const downPayment = principal * ((parseFloat(downPaymentPct) || 0) / 100)
   const loanAmount = principal - downPayment
   const rate = (parseFloat(interestRatePct) || 0) / 100 / 12
-  const n = 360
+  const term = parseInt(termYears) || 30
+  const n = term * 12
   const monthlyPayment =
     loanAmount > 0 && rate > 0
       ? (loanAmount * rate) / (1 - Math.pow(1 + rate, -n))
@@ -20,7 +21,7 @@ function buildYearlyData({ offerPrice, downPaymentPct, interestRatePct }) {
   let balance = loanAmount
   const data = []
 
-  for (let year = 1; year <= 30; year++) {
+  for (let year = 1; year <= term; year++) {
     let yearInterest = 0
     let yearPrincipal = 0
     for (let m = 0; m < 12; m++) {
@@ -38,7 +39,7 @@ function buildYearlyData({ offerPrice, downPaymentPct, interestRatePct }) {
     })
   }
 
-  return { data, loanAmount, monthlyPayment }
+  return { data, loanAmount, monthlyPayment, term, n }
 }
 
 function fmtCurrency(v) {
@@ -84,7 +85,7 @@ function CustomLegend({ payload }) {
 }
 
 export default function AmortizationChart({ inputs }) {
-  const { data, loanAmount, monthlyPayment } = buildYearlyData(inputs)
+  const { data, loanAmount, monthlyPayment, term, n } = buildYearlyData(inputs)
 
   if (!loanAmount || !monthlyPayment) {
     return (
@@ -94,7 +95,7 @@ export default function AmortizationChart({ inputs }) {
     )
   }
 
-  const totalPaid = monthlyPayment * 360
+  const totalPaid = monthlyPayment * n
   const totalInterest = totalPaid - loanAmount
 
   return (
@@ -102,7 +103,7 @@ export default function AmortizationChart({ inputs }) {
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-6">
         <div>
           <h2 className="text-xl font-bold text-slate-800 tracking-tight">Amortization Schedule</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Annual principal &amp; interest breakdown over 30 years</p>
+          <p className="text-sm text-slate-500 mt-0.5">Annual principal &amp; interest breakdown over {term} years</p>
         </div>
         <div className="flex gap-4 text-right">
           <div>
@@ -138,7 +139,7 @@ export default function AmortizationChart({ inputs }) {
             tick={{ fontSize: 11, fill: '#94a3b8' }}
             axisLine={false}
             tickLine={false}
-            interval={4}
+            interval={term <= 15 ? 2 : term <= 20 ? 3 : 4}
           />
           <YAxis
             yAxisId="payment"
