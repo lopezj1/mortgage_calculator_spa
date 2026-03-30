@@ -53,7 +53,7 @@ function StepInput({ id, name, rawValue, displayValue, step, onChange, onFocus, 
   )
 }
 
-export default function MortgageForm({ inputs, onChange, onCalculate, expanded, setExpanded }) {
+export default function MortgageForm({ inputs, onChange, onCalculate, expanded, setExpanded, loanInputMode, setLoanInputMode, downPaymentMode, setDownPaymentMode }) {
   const [focusedField, setFocusedField] = useState(null)
 
   function displayCurrency(raw, name) {
@@ -87,25 +87,88 @@ export default function MortgageForm({ inputs, onChange, onCalculate, expanded, 
           onChange={onChange}
         />
 
-        <label htmlFor="offerPrice" className={labelClass}>Offer Price</label>
-        <StepInput
-          id="offerPrice" name="offerPrice" step={1000}
-          rawValue={inputs.offerPrice}
-          displayValue={displayCurrency(inputs.offerPrice, 'offerPrice')}
-          onChange={onChange}
-          onFocus={focus('offerPrice')} onBlur={blur()}
-          inputMode="numeric" placeholder="$0"
-        />
+        {/* Loan input mode toggle */}
+        <div className="flex gap-1 rounded-lg border border-slate-300 overflow-hidden">
+          {[['offer', 'Offer + Down'], ['loanAmount', 'Loan Amount']].map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setLoanInputMode(mode)}
+              className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
+                loanInputMode === mode
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-        <label htmlFor="downPaymentPct" className={labelClass}>Down Payment</label>
-        <StepInput
-          id="downPaymentPct" name="downPaymentPct" step={1}
-          rawValue={inputs.downPaymentPct}
-          displayValue={displayPercent(inputs.downPaymentPct, 'downPaymentPct')}
-          onChange={onChange}
-          onFocus={focus('downPaymentPct')} onBlur={blur()}
-          inputMode="decimal" placeholder="0%"
-        />
+        {loanInputMode === 'offer' ? (
+          <>
+            <label htmlFor="offerPrice" className={labelClass}>Offer Price</label>
+            <StepInput
+              id="offerPrice" name="offerPrice" step={1000}
+              rawValue={inputs.offerPrice}
+              displayValue={displayCurrency(inputs.offerPrice, 'offerPrice')}
+              onChange={onChange}
+              onFocus={focus('offerPrice')} onBlur={blur()}
+              inputMode="numeric" placeholder="$0"
+            />
+
+            <div className="flex items-center justify-between">
+              <label className={labelClass}>Down Payment</label>
+              <div className="flex gap-0.5 rounded border border-slate-300 overflow-hidden">
+                {[['pct', '%'], ['amt', '$']].map(([mode, sym]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setDownPaymentMode(mode)}
+                    className={`px-2 py-0.5 text-xs font-bold transition-colors ${
+                      downPaymentMode === mode
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {sym}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {downPaymentMode === 'pct' ? (
+              <StepInput
+                id="downPaymentPct" name="downPaymentPct" step={1}
+                rawValue={inputs.downPaymentPct}
+                displayValue={displayPercent(inputs.downPaymentPct, 'downPaymentPct')}
+                onChange={onChange}
+                onFocus={focus('downPaymentPct')} onBlur={blur()}
+                inputMode="decimal" placeholder="0%"
+              />
+            ) : (
+              <StepInput
+                id="downPaymentAmt" name="downPaymentAmt" step={1000}
+                rawValue={inputs.downPaymentAmt}
+                displayValue={displayCurrency(inputs.downPaymentAmt, 'downPaymentAmt')}
+                onChange={onChange}
+                onFocus={focus('downPaymentAmt')} onBlur={blur()}
+                inputMode="numeric" placeholder="$0"
+              />
+            )}
+          </>
+        ) : (
+          <>
+            <label htmlFor="directLoanAmount" className={labelClass}>Loan Amount</label>
+            <StepInput
+              id="directLoanAmount" name="directLoanAmount" step={1000}
+              rawValue={inputs.directLoanAmount}
+              displayValue={displayCurrency(inputs.directLoanAmount, 'directLoanAmount')}
+              onChange={onChange}
+              onFocus={focus('directLoanAmount')} onBlur={blur()}
+              inputMode="numeric" placeholder="$0"
+            />
+          </>
+        )}
 
         <label className={labelClass}>Interest Rates</label>
         {[

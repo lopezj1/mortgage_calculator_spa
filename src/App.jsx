@@ -9,6 +9,7 @@ import { PencilIcon } from 'lucide-react'
 const CURRENCY_FIELDS = new Set([
   'offerPrice', 'taxes', 'insurance',
   'grossMonthlyIncome', 'netMonthlyIncome', 'monthlyExpenses',
+  'downPaymentAmt', 'directLoanAmount',
 ])
 const PERCENT_FIELDS = new Set(['downPaymentPct', 'interestRatePct', 'interestRatePct20', 'interestRatePct15'])
 
@@ -17,6 +18,8 @@ function App() {
     address: '123 Main St',
     offerPrice: '339000',
     downPaymentPct: '20',
+    downPaymentAmt: '67800',
+    directLoanAmount: '271200',
     interestRatePct: '3.5',
     interestRatePct20: '2.75',
     interestRatePct15: '2.0',
@@ -27,6 +30,8 @@ function App() {
     insurance: '800',
     termYears: '30',
   })
+  const [loanInputMode, setLoanInputMode] = useState('offer')
+  const [downPaymentMode, setDownPaymentMode] = useState('pct')
   const [results, setResults] = useState(null)
   const [comparisonResults, setComparisonResults] = useState(null)
   const [expanded, setExpanded] = useState(true)
@@ -45,9 +50,22 @@ function App() {
     30: inputs.interestRatePct,
   }[t] ?? inputs.interestRatePct)
 
+  const normalizeInputs = (base) => {
+    if (loanInputMode === 'loanAmount') {
+      return { ...base, offerPrice: base.directLoanAmount, downPaymentPct: '0' }
+    }
+    if (downPaymentMode === 'amt') {
+      const offer = parseFloat(base.offerPrice) || 0
+      const amt = parseFloat(base.downPaymentAmt) || 0
+      const derivedPct = offer > 0 ? String((amt / offer) * 100) : '0'
+      return { ...base, downPaymentPct: derivedPct }
+    }
+    return base
+  }
+
   const handleCalculate = () => {
     const selectedTerm = parseInt(inputs.termYears) || 30
-    const withRate = (t) => ({ ...inputs, termYears: String(t), interestRatePct: rateForTerm(t) })
+    const withRate = (t) => normalizeInputs({ ...inputs, termYears: String(t), interestRatePct: rateForTerm(t) })
     setResults(calculateMortgage(withRate(selectedTerm)))
     setComparisonResults([15, 20, 30].map(t => calculateMortgage(withRate(t))))
   }
@@ -62,6 +80,10 @@ function App() {
           onCalculate={handleCalculate}
           expanded={expanded}
           setExpanded={setExpanded}
+          loanInputMode={loanInputMode}
+          setLoanInputMode={setLoanInputMode}
+          downPaymentMode={downPaymentMode}
+          setDownPaymentMode={setDownPaymentMode}
         />
         {!expanded && (
           <button
