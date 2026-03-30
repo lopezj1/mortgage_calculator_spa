@@ -12,6 +12,7 @@ export default function MortgageResults({ results, inputs, comparisonResults }) 
 
   const termYears = results.termYears || 30
   const stats = [
+    { label: 'Down Payment', value: fmt(results.downPayment) },
     { label: 'Loan Amount', value: fmt(results.loanAmount) },
     { label: 'Monthly Payment', value: fmt(results.monthlyPayment) },
     { label: 'Monthly Taxes', value: fmt(results.monthlyTaxes) },

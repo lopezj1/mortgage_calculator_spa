@@ -28,6 +28,7 @@ export function calculateMortgage(inputs, termYears = 30) {
   const mortgagePctGross = grossMonthlyIncome > 0 ? (totalMonthlyHouseExpense / grossMonthlyIncome) * 100 : 0;
 
   return {
+    downPayment,
     loanAmount,
     monthlyPayment,
     totalMonthlyHouseExpense,
